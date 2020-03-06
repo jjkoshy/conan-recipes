@@ -42,6 +42,16 @@ CXX=clang++
 
 (You can see the settings that are available in `~/.conan/settings.yml`.)
 
+Additionally, you may want to check that you have suitable conan remotes to
+fetch packages that you depend on. For example:
+
+```
+conan remote list
+# returns:
+conan-center: https://conan.bintray.com [Verify SSL: True]
+bincrafters: https://api.bintray.com/conan/bincrafters/public-conan [Verify SSL: True]
+```
+
 ### Create packages from the recipes
 
 For example, for the leveldb package run this from the conan-leveldb recipe
