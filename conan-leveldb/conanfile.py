@@ -21,8 +21,11 @@ class LevelDBConan(ConanFile):
         self.options['snappy'].shared = True
     
     def source(self):
-       tools.download("https://github.com/google/leveldb/archive/%s.zip" % self.version, "leveldb.zip")
-       tools.unzip("leveldb.zip")
+       zip_name = "%s.zip" % self.version
+       tools.download("https://github.com/google/leveldb/archive/%s.zip" % self.version, zip_name)
+       tools.check_md5(zip_name, "f741bc416308adb35d79900afe282d9e")
+       tools.unzip(zip_name)
+       os.unlink(zip_name)
 
     def build(self):
         cmake = CMake(self)
