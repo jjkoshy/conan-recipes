@@ -21,6 +21,7 @@ class BrpcConan(ConanFile):
         self.options['gflags'].shared = True
         self.options['gflags'].nothreads = False
         self.options['protobuf'].with_zlib = True
+        self.options['leveldb'].with_snappy = False
 
     @property
     def zip_folder_name(self):

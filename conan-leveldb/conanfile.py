@@ -13,7 +13,7 @@ class LevelDBConan(ConanFile):
             "with_snappy": [True, False] }
     default_options = {
             "shared": False,
-            "with_snappy": True }
+            "with_snappy": False }
     generators = "cmake"
 
     # This exists because leveldb conditionally includes code that uses snappy
