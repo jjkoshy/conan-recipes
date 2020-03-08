@@ -9,8 +9,12 @@ class BrpcConan(ConanFile):
     url = "https://github.com/jjkoshy/conan-recipes/conan-brpc"
     description = "An industrial-grade RPC framework used throughout Baidu"
     settings = "os", "os_build", "compiler", "build_type", "arch", "arch_build"
-    options = {"shared": [True, False]}
-    default_options = "shared=False"
+    options = {
+            "shared": [True, False],
+            "with_snappy": [True, False] }
+    default_options = {
+            "shared": False,
+            "with_snappy": False }
     generators = ("cmake_paths")
     requires = ("gflags/2.2.2@bincrafters/stable",
                 "protobuf/3.6.1@bincrafters/stable",
@@ -21,7 +25,7 @@ class BrpcConan(ConanFile):
         self.options['gflags'].shared = True
         self.options['gflags'].nothreads = False
         self.options['protobuf'].with_zlib = True
-        self.options['leveldb'].with_snappy = False
+        self.options['leveldb'].with_snappy = self.options.with_snappy
 
     @property
     def zip_folder_name(self):
