@@ -1,5 +1,5 @@
 from conans import CMake, ConanFile, tools
-import os, shutil
+import os
 
 
 class BrpcConan(ConanFile):
