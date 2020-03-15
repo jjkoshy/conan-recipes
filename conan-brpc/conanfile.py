@@ -41,20 +41,43 @@ class BrpcConan(ConanFile):
             # tools.patch API is more convenient, but replace_in_file is more
             # robust (e.g., if you want to use this recipe for a newer brpc
             # version)
+
+            # since a conan profile may specify building packages in debug
+            # mode, add the debug name of libgflags
             repl = "GFLAGS_LIBRARY NAMES gflags libgflags"
             tools.replace_in_file("cmake/FindGFLAGS.cmake", repl,
                     repl + " gflags_debug libgflags_debug")
-            tools.replace_in_file("CMakeLists.txt", "set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)",
-                '''list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")''')
+
+            # conan recipes publish libraries with lower case names (see
+            # https://github.com/conan-io/conan/issues/4460 for e.g.,) so we
+            # have to replace GFLAGS with gflags
             repl = "find_package(GFLAGS REQUIRED)"
             tools.replace_in_file("CMakeLists.txt", repl,
                     "\n".join(["find_package(gflags REQUIRED)",
                                "include(FindGFLAGS)"]))
-            tools.replace_in_file("CMakeLists.txt", """git rev-parse --short HEAD | tr -d '\\n'""", ":")
-            tools.replace_in_file("CMakeLists.txt", "OUTPUT_VARIABLE BRPC_REVISION", "")
+
+            # we are using the cmake_paths generator which sets the
+            # CMAKE_MODULE_PATH. Unfortunately, brpc's CMakeLists.txt
+            # overwrites it with set. So we replace the set with an append.
+            tools.replace_in_file("CMakeLists.txt", "set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)",
+                '''list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")''')
+
+            # brpc's CMakeLists.txt uses git to figure out what to set
+            # BRPC_REVISION to. Since the recipe fetches a release zip we just
+            # set it manually and remove the call to git
             repl = "project(brpc C CXX)"
             tools.replace_in_file("CMakeLists.txt", repl,
                     "\n".join([repl, '''set(BRPC_REVISION "a6ccc96a")''']))
+            tools.replace_in_file("CMakeLists.txt", """git rev-parse --short HEAD | tr -d '\\n'""", ":")
+            tools.replace_in_file("CMakeLists.txt", "OUTPUT_VARIABLE BRPC_REVISION", "")
+
+            # (i) many linux distributions come with protobuf installed. Since
+            # this recipe explicitly specifies a dependency on the bincrafters
+            # protobuf package, we want to use that package (not the locally
+            # available libprotobuf). (ii) conan-protobuf publishes the protoc
+            # compiler and libprotobuf separately so we find_package for both.
+            # (iii) since brpc uses the older style calls to protoc, we have to
+            # turn on the protobuf_MODULE_COMPATIBLE option.
             tools.replace_in_file("CMakeLists.txt", "include(FindProtobuf)",
                     '''
 list(APPEND CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH}
@@ -63,6 +86,9 @@ list(APPEND CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH}
 option(protobuf_MODULE_COMPATIBLE "override" ON)
 find_package(protoc REQUIRED)
 find_package(protobuf REQUIRED)''')
+
+            # include the debug name of protoc in case the conan profile
+            # specifies debug mode.
             tools.replace_in_file("CMakeLists.txt", "find_library(PROTOC_LIB NAMES protoc)",
                     '''
 find_library(PROTOC_LIB NAMES protoc protocd)
@@ -74,7 +100,18 @@ set(PROTOBUF_INCLUDE_DIR "${CONAN_PROTOBUF_ROOT}/include")''')
         cmake = CMake(self)
         # uncomment for non-parallel builds
         # cmake.parallel = False
-        # cmake_paths generator produces conan_paths.cmake
+
+        # The cmake_paths generator produces conan_paths.cmake which sets
+        # various path variables for the libraries this recipe depends on, and
+        # adds those to the CMAKE_MODULE_PATH (used by include() and
+        # FindXXX.cmake) and CMAKE_PREFIX_PATH (used by find_library and
+        # find_dependency). For e.g.:
+        #
+        # set(CONAN_ZLIB_ROOT "/home/jjkoshy/.conan/data/zlib/1.2.11/conan/stable/package/7c292f54b7e6c224f121c640404bf7fbbeb41a8f")
+        # set(CMAKE_MODULE_PATH "/home/jjkoshy/.conan/data/brpc/0.9.5/jjkoshy/stable/package/3a1b935ee508ae45a4e5b45eb2504048debd5203/"
+        #                       "/home/jjkoshy/.conan/data/gflags/2.2.2/bincrafters/stable/package/b79e8887815d0c32512f737644747a0a383a2545/"
+        # ... )
+
         cmake.definitions["CMAKE_TOOLCHAIN_FILE"] = "conan_paths.cmake"
         cmake.configure(
             source_folder="incubator-brpc-0.9.5",
