@@ -11,6 +11,8 @@ class BrpcConan(ConanFile):
     settings = "os", "os_build", "compiler", "build_type", "arch", "arch_build"
     options = {
             "shared": [True, False],
+            # see the leveldb recipe in conan-leveldb/conanfile.py for why we
+            # need this
             "with_snappy": [True, False] }
     default_options = {
             "shared": False,
@@ -22,6 +24,8 @@ class BrpcConan(ConanFile):
                 "protoc_installer/3.6.1@bincrafters/stable")
 
     def config(self):
+        # can also be passed via conan invocation. e.g.,
+        # conan create ... -o protobuf:shared=True
         self.options['gflags'].shared = True
         self.options['gflags'].nothreads = False
         self.options['protobuf'].with_zlib = True
@@ -88,13 +92,22 @@ find_package(protoc REQUIRED)
 find_package(protobuf REQUIRED)''')
 
             # include the debug name of protoc in case the conan profile
-            # specifies debug mode.
+            # specifies debug mode. also, search for snappy lib if with_snappy
+            # is true
             tools.replace_in_file("CMakeLists.txt", "find_library(PROTOC_LIB NAMES protoc)",
-                    '''
+                    ('''
+find_library(SNAPPY_LIB NAMES snappy)
+''' if self.options.with_snappy else "") + '''
 find_library(PROTOC_LIB NAMES protoc protocd)
 set(PROTOBUF_INCLUDE_DIRS "${CONAN_PROTOBUF_ROOT}/include")
 set(PROTOBUF_INCLUDE_DIR "${CONAN_PROTOBUF_ROOT}/include")''')
             tools.replace_in_file("CMakeLists.txt", "${PROTOBUF_LIBRARIES}", "${Protobuf_LIBRARIES}")
+
+            # add snappy to list of libs to link with if with_snappy is true
+            if self.options.with_snappy:
+                repl = "${OPENSSL_CRYPTO_LIBRARY}"
+                tools.replace_in_file("CMakeLists.txt", repl, repl + '''
+    ${SNAPPY_LIB}''')
 
     def configure_cmake(self):
         cmake = CMake(self)
