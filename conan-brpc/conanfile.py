@@ -18,9 +18,14 @@ class BrpcConan(ConanFile):
             "shared": False,
             "with_snappy": False }
     generators = ("cmake_paths")
-    requires = ("gflags/2.2.2@bincrafters/stable",
+    # TODO: clang 10 breaks
+    # TODO: protobuf@cci breaks
+    # TODO: protobuf/protoc_installer @ 3.9.1 breaks
+    #/home/jjkoshy/.conan/data/brpc/0.9.5/jjkoshy/stable/build/018c25c0e3c473f4b824654a806300d7da651205/incubator-brpc-0.9.5/src/brpc/esp_message.cpp:24:10: fatal error: google/protobuf/wire_format_lite_inl.h: No such file or directory
+
+    requires = ("gflags/2.2.2",
                 "protobuf/3.6.1@bincrafters/stable",
-                "leveldb/1.22@jjkoshy/stable",
+                "leveldb/1.22",
                 "protoc_installer/3.6.1@bincrafters/stable")
 
     def config(self):
@@ -51,14 +56,6 @@ class BrpcConan(ConanFile):
             repl = "GFLAGS_LIBRARY NAMES gflags libgflags"
             tools.replace_in_file("cmake/FindGFLAGS.cmake", repl,
                     repl + " gflags_debug libgflags_debug")
-
-            # conan recipes publish libraries with lower case names (see
-            # https://github.com/conan-io/conan/issues/4460 for e.g.,) so we
-            # have to replace GFLAGS with gflags
-            repl = "find_package(GFLAGS REQUIRED)"
-            tools.replace_in_file("CMakeLists.txt", repl,
-                    "\n".join(["find_package(gflags REQUIRED)",
-                               "include(FindGFLAGS)"]))
 
             # we are using the cmake_paths generator which sets the
             # CMAKE_MODULE_PATH. Unfortunately, brpc's CMakeLists.txt
