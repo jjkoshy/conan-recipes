@@ -19,14 +19,12 @@ class BrpcConan(ConanFile):
             "with_snappy": False }
     generators = ("cmake_paths")
     exports_sources = ["patches/*"]
-    # TODO: switch to 0.9.6 brpc
     # TODO: clang 10 breaks
-    # TODO: protobuf@cci breaks
-    # TODO: protobuf/protoc_installer @ 3.9.1 breaks
-    #/home/jjkoshy/.conan/data/brpc/0.9.5/jjkoshy/stable/build/018c25c0e3c473f4b824654a806300d7da651205/incubator-brpc-0.9.5/src/brpc/esp_message.cpp:24:10: fatal error: google/protobuf/wire_format_lite_inl.h: No such file or directory
+    # TODO: patch cmakelists.txt for with_snappy option
+    # TODO: cci protobuf breaks with CMake Error at CMakeLists.txt:125 (find_package):
 
     requires = ("gflags/2.2.2",
-                "protobuf/3.9.1@bincrafters/stable",
+                "protobuf/3.9.1",
                 "leveldb/1.22",
                 "protoc_installer/3.9.1@bincrafters/stable")
 

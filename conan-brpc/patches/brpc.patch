@@ -1,0 +1,76 @@
+--- CMakeLists.txt	2020-03-16 23:44:39.133357168 -0700
++++ CMakeLists.txt	2020-05-13 13:42:17.972298694 -0700
+@@ -1,5 +1,6 @@
+ cmake_minimum_required(VERSION 2.8.10)
+ project(brpc C CXX)
++set(BRPC_REVISION "a6ccc96a")
+ 
+ # Enable MACOSX_RPATH. Run "cmake --help-policy CMP0042" for policy details.
+ if(POLICY CMP0042)
+@@ -47,7 +48,7 @@
+ 
+ configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_SOURCE_DIR}/src/butil/config.h @ONLY)
+ 
+-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
++list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+ 
+ find_package(GFLAGS REQUIRED)
+ 
+@@ -68,8 +69,8 @@
+ )
+ 
+ execute_process(
+-    COMMAND bash -c "git rev-parse --short HEAD | tr -d '\n'"
+-    OUTPUT_VARIABLE BRPC_REVISION
++    COMMAND bash -c ":"
++    
+ )
+ 
+ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+@@ -112,7 +113,13 @@
+     endif()
+ endif()
+ 
+-include(FindProtobuf)
++
++list(APPEND CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH}
++    "${CONAN_PROTOBUF_ROOT}/lib/cmake/protobuf"
++    "${CONAN_PROTOC_INSTALLER_ROOT}/lib/cmake/protoc")
++option(protobuf_MODULE_COMPATIBLE "override" ON)
++find_package(protoc REQUIRED)
++find_package(protobuf REQUIRED)
+ include(FindThreads)
+ 
+ find_path(LEVELDB_INCLUDE_PATH NAMES leveldb/db.h)
+@@ -130,7 +137,10 @@
+     include_directories(${GLOG_INCLUDE_PATH})
+ endif()
+ 
+-find_library(PROTOC_LIB NAMES protoc)
++
++find_library(PROTOC_LIB NAMES protoc protocd)
++set(PROTOBUF_INCLUDE_DIRS "${CONAN_PROTOBUF_ROOT}/include")
++set(PROTOBUF_INCLUDE_DIR "${CONAN_PROTOBUF_ROOT}/include")
+ if(NOT PROTOC_LIB)
+     message(FATAL_ERROR "Fail to find protoc lib")
+ endif()
+@@ -152,7 +162,7 @@
+ 
+ set(DYNAMIC_LIB
+     ${GFLAGS_LIBRARY}
+-    ${PROTOBUF_LIBRARIES}
++    ${Protobuf_LIBRARIES}
+     ${LEVELDB_LIB}
+     ${PROTOC_LIB}
+     ${CMAKE_THREAD_LIBS_INIT}
+--- cmake/FindGFLAGS.cmake	2020-03-16 23:44:39.136690709 -0700
++++ cmake/FindGFLAGS.cmake	2020-05-13 13:42:17.972298694 -0700
+@@ -9,7 +9,7 @@
+     set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
+   endif (WIN32)
+ endif (GFLAGS_STATIC)
+-find_library(GFLAGS_LIBRARY NAMES gflags libgflags)
++find_library(GFLAGS_LIBRARY NAMES gflags libgflags gflags_debug libgflags_debug)
+ if(GFLAGS_INCLUDE_PATH AND GFLAGS_LIBRARY)
+   set(GFLAGS_FOUND TRUE)
+ endif(GFLAGS_INCLUDE_PATH AND GFLAGS_LIBRARY)

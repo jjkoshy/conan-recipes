@@ -1,0 +1,152 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 4170c465..5c0b4060 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -1,5 +1,6 @@
+ cmake_minimum_required(VERSION 2.8.10)
+ project(brpc C CXX)
++set(BRPC_REVISION "a6ccc96a")
+ 
+ # Enable MACOSX_RPATH. Run "cmake --help-policy CMP0042" for policy details.
+ if(POLICY CMP0042)
+@@ -47,7 +48,7 @@ include(GNUInstallDirs)
+ 
+ configure_file(${PROJECT_SOURCE_DIR}/config.h.in ${PROJECT_SOURCE_DIR}/src/butil/config.h @ONLY)
+ 
+-set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
++list(APPEND CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/cmake")
+ 
+ find_package(GFLAGS REQUIRED)
+ 
+@@ -68,8 +69,8 @@ include_directories(
+ )
+ 
+ execute_process(
+-    COMMAND bash -c "git rev-parse --short HEAD | tr -d '\n'"
+-    OUTPUT_VARIABLE BRPC_REVISION
++    COMMAND bash -c ":"
++    
+ )
+ 
+ if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
+@@ -112,7 +113,13 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+     endif()
+ endif()
+ 
+-include(FindProtobuf)
++
++list(APPEND CMAKE_PREFIX_PATH ${CMAKE_PREFIX_PATH}
++    "${CONAN_PROTOBUF_ROOT}/lib/cmake/protobuf"
++    "${CONAN_PROTOC_INSTALLER_ROOT}/lib/cmake/protoc")
++option(protobuf_MODULE_COMPATIBLE "override" ON)
++find_package(protoc REQUIRED)
++find_package(protobuf REQUIRED)
+ include(FindThreads)
+ 
+ find_path(LEVELDB_INCLUDE_PATH NAMES leveldb/db.h)
+@@ -130,7 +137,10 @@ if(WITH_GLOG)
+     include_directories(${GLOG_INCLUDE_PATH})
+ endif()
+ 
+-find_library(PROTOC_LIB NAMES protoc)
++
++find_library(PROTOC_LIB NAMES protoc protocd)
++set(PROTOBUF_INCLUDE_DIRS "${CONAN_PROTOBUF_ROOT}/include")
++set(PROTOBUF_INCLUDE_DIR "${CONAN_PROTOBUF_ROOT}/include")
+ if(NOT PROTOC_LIB)
+     message(FATAL_ERROR "Fail to find protoc lib")
+ endif()
+@@ -152,7 +162,7 @@ include_directories(
+ 
+ set(DYNAMIC_LIB
+     ${GFLAGS_LIBRARY}
+-    ${PROTOBUF_LIBRARIES}
++    ${Protobuf_LIBRARIES}
+     ${LEVELDB_LIB}
+     ${PROTOC_LIB}
+     ${CMAKE_THREAD_LIBS_INIT}
+diff --git a/cmake/FindGFLAGS.cmake b/cmake/FindGFLAGS.cmake
+index 50950422..97c4f986 100644
+--- a/cmake/FindGFLAGS.cmake
++++ b/cmake/FindGFLAGS.cmake
+@@ -9,7 +9,7 @@ if (GFLAGS_STATIC)
+     set(CMAKE_FIND_LIBRARY_SUFFIXES .a ${CMAKE_FIND_LIBRARY_SUFFIXES})
+   endif (WIN32)
+ endif (GFLAGS_STATIC)
+-find_library(GFLAGS_LIBRARY NAMES gflags libgflags)
++find_library(GFLAGS_LIBRARY NAMES gflags libgflags gflags_debug libgflags_debug)
+ if(GFLAGS_INCLUDE_PATH AND GFLAGS_LIBRARY)
+   set(GFLAGS_FOUND TRUE)
+ endif(GFLAGS_INCLUDE_PATH AND GFLAGS_LIBRARY)
+diff --git a/src/brpc/esp_message.cpp b/src/brpc/esp_message.cpp
+index 26eff2c7..bdb96580 100644
+--- a/src/brpc/esp_message.cpp
++++ b/src/brpc/esp_message.cpp
+@@ -21,7 +21,6 @@
+ 
+ #include <google/protobuf/stubs/once.h>
+ #include <google/protobuf/io/coded_stream.h>
+-#include <google/protobuf/wire_format_lite_inl.h>
+ #include <google/protobuf/descriptor.h>
+ #include <google/protobuf/reflection_ops.h>
+ #include <google/protobuf/wire_format.h>
+diff --git a/src/brpc/memcache.cpp b/src/brpc/memcache.cpp
+index b069a195..86dcda22 100644
+--- a/src/brpc/memcache.cpp
++++ b/src/brpc/memcache.cpp
+@@ -18,7 +18,6 @@
+ #include <algorithm>
+ #include <google/protobuf/stubs/once.h>
+ #include <google/protobuf/io/coded_stream.h>
+-#include <google/protobuf/wire_format_lite_inl.h>
+ #include <google/protobuf/descriptor.h>
+ #include <google/protobuf/reflection_ops.h>
+ #include <google/protobuf/wire_format.h>
+diff --git a/src/brpc/nshead_message.cpp b/src/brpc/nshead_message.cpp
+index dc197f99..ee61f287 100644
+--- a/src/brpc/nshead_message.cpp
++++ b/src/brpc/nshead_message.cpp
+@@ -22,7 +22,6 @@
+ 
+ #include <google/protobuf/stubs/once.h>
+ #include <google/protobuf/io/coded_stream.h>
+-#include <google/protobuf/wire_format_lite_inl.h>
+ #include <google/protobuf/descriptor.h>
+ #include <google/protobuf/reflection_ops.h>
+ #include <google/protobuf/wire_format.h>
+diff --git a/src/brpc/redis.cpp b/src/brpc/redis.cpp
+index 0fe0701e..92bd433d 100644
+--- a/src/brpc/redis.cpp
++++ b/src/brpc/redis.cpp
+@@ -19,7 +19,6 @@
+ #include <gflags/gflags.h>
+ #include <google/protobuf/stubs/once.h>
+ #include <google/protobuf/io/coded_stream.h>
+-#include <google/protobuf/wire_format_lite_inl.h>
+ #include <google/protobuf/descriptor.h>
+ #include <google/protobuf/reflection_ops.h>
+ #include <google/protobuf/wire_format.h>
+diff --git a/src/brpc/serialized_request.cpp b/src/brpc/serialized_request.cpp
+index c6e73c25..3cd7edb5 100644
+--- a/src/brpc/serialized_request.cpp
++++ b/src/brpc/serialized_request.cpp
+@@ -21,7 +21,6 @@
+ 
+ #include <google/protobuf/stubs/once.h>
+ #include <google/protobuf/io/coded_stream.h>
+-#include <google/protobuf/wire_format_lite_inl.h>
+ #include <google/protobuf/descriptor.h>
+ #include <google/protobuf/reflection_ops.h>
+ #include <google/protobuf/wire_format.h>
+diff --git a/src/brpc/thrift_message.cpp b/src/brpc/thrift_message.cpp
+index 0c0f87c5..9befb77c 100644
+--- a/src/brpc/thrift_message.cpp
++++ b/src/brpc/thrift_message.cpp
+@@ -23,7 +23,6 @@
+ 
+ #include <google/protobuf/stubs/once.h>
+ #include <google/protobuf/io/coded_stream.h>
+-#include <google/protobuf/wire_format_lite_inl.h>
+ #include <google/protobuf/descriptor.h>
+ #include <google/protobuf/reflection_ops.h>
+ #include <google/protobuf/wire_format.h>
