@@ -43,16 +43,14 @@ class BrpcConan(ConanFile):
         zip_name = "%s.zip" % self.version
         tools.download("https://github.com/apache/incubator-brpc/archive/%s.zip" % self.version, zip_name)
         tools.unzip(zip_name)
-        #tools.check_md5(zip_name, "b9d4bf31e0820854fd14be9cc94f4150")
+        tools.check_md5(zip_name, "783b3b0d5b9d254a93f26ce769b00bfc")
         os.unlink(zip_name)
         with tools.chdir(self.zip_folder_name):
             # TODO: switch to conandata.yml approach
             tools.patch(patch_file="/home/jjkoshy/Projects/github/conan-recipes/conan-brpc/patches/brpc-0.9.6.patch", strip=1)
             # add snappy to list of libs to link with if with_snappy is true
             if self.options.with_snappy:
-                repl = "${OPENSSL_CRYPTO_LIBRARY}"
-                tools.replace_in_file("CMakeLists.txt", repl, repl + '''
-    ${SNAPPY_LIB}''')
+                tools.patch(patch_file="/home/jjkoshy/Projects/github/conan-recipes/conan-brpc/patches/snappy.patch", strip=1)
 
     def configure_cmake(self):
         cmake = CMake(self)

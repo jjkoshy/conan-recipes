@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f469eb9f..a4af91b0 100644
+index f469eb9f..398db40f 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -54,7 +54,7 @@ include(GNUInstallDirs)
@@ -23,7 +23,7 @@ index f469eb9f..a4af91b0 100644
  
  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
      include(CheckFunctionExists)
-@@ -119,7 +116,12 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+@@ -119,7 +116,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
      endif()
  endif()
  
@@ -32,12 +32,11 @@ index f469eb9f..a4af91b0 100644
 +    "${CONAN_PROTOBUF_ROOT}/lib/cmake/protobuf"
 +    "${CONAN_PROTOC_INSTALLER_ROOT}/lib/cmake/protoc")
 +option(protobuf_MODULE_COMPATIBLE "override" ON)
-+#find_package(protoc REQUIRED)
 +find_package(Protobuf REQUIRED)
  include(FindThreads)
  
  find_path(LEVELDB_INCLUDE_PATH NAMES leveldb/db.h)
-@@ -137,11 +139,14 @@ if(WITH_GLOG)
+@@ -137,11 +138,14 @@ if(WITH_GLOG)
      include_directories(${GLOG_INCLUDE_PATH})
  endif()
  
@@ -53,7 +52,7 @@ index f469eb9f..a4af91b0 100644
  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
      set(OPENSSL_ROOT_DIR
          "/usr/local/opt/openssl"    # Homebrew installed OpenSSL
-@@ -159,7 +164,7 @@ include_directories(
+@@ -159,7 +163,7 @@ include_directories(
  
  set(DYNAMIC_LIB
      ${GFLAGS_LIBRARY}

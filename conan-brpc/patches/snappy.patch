@@ -1,0 +1,24 @@
+diff --git a/CMakeLists.txt b/CMakeLists.txt
+index 398db40f..0e75c93b 100644
+--- a/CMakeLists.txt
++++ b/CMakeLists.txt
+@@ -161,6 +161,7 @@ include_directories(
+         ${OPENSSL_INCLUDE_DIR}
+         )
+ 
++find_library(SNAPPY_LIB NAMES snappy)
+ set(DYNAMIC_LIB
+     ${GFLAGS_LIBRARY}
+     ${Protobuf_LIBRARIES}
+@@ -171,9 +172,10 @@ set(DYNAMIC_LIB
+     ${THRIFTNB_LIB}
+     ${OPENSSL_LIBRARIES}
+     ${OPENSSL_CRYPTO_LIBRARY}
++    ${SNAPPY_LIB}
+     dl
+     z)
+-set(BRPC_PRIVATE_LIBS "-lgflags -lprotobuf -lleveldb -lprotoc -lssl -lcrypto -ldl -lz")
++set(BRPC_PRIVATE_LIBS "-lgflags -lprotobuf -lleveldb -lprotoc -lssl -lcrypto -lsnappy -ldl -lz")
+ 
+ if(WITH_GLOG)
+     set(DYNAMIC_LIB ${DYNAMIC_LIB} ${GLOG_LIB})
