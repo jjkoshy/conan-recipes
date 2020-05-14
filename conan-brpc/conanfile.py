@@ -21,7 +21,6 @@ class BrpcConan(ConanFile):
     exports_sources = ["patches/*"]
     # TODO: clang 10 breaks
     # TODO: patch cmakelists.txt for with_snappy option
-    # TODO: cci protobuf breaks with CMake Error at CMakeLists.txt:125 (find_package):
 
     requires = ("gflags/2.2.2",
                 "protobuf/3.9.1",
