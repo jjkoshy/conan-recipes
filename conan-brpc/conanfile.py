@@ -45,10 +45,11 @@ class BrpcConan(ConanFile):
         os.unlink(zip_name)
         with tools.chdir(self.zip_folder_name):
             # TODO: switch to conandata.yml approach
-            tools.patch(patch_file="/home/jjkoshy/Projects/github/conan-recipes/conan-brpc/patches/brpc-0.9.6.patch", strip=1)
+            tools.patch(patch_file="../patches/brpc-0.9.6.patch", strip=1)
+
             # add snappy to list of libs to link with if with_snappy is true
             if self.options.with_snappy:
-                tools.patch(patch_file="/home/jjkoshy/Projects/github/conan-recipes/conan-brpc/patches/snappy.patch", strip=1)
+                tools.patch(patch_file="../patches/snappy.patch", strip=1)
 
     def configure_cmake(self):
         cmake = CMake(self)
