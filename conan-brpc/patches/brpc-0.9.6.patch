@@ -741,3 +741,16 @@ index 00000000..f35978d8
 +    string(TOUPPER ${Camel} UPPER)
 +    set(${UPPER} ${${Camel}})
 +endforeach()
+diff --git a/src/bvar/scoped_timer.h b/src/bvar/scoped_timer.h
+index b3f1c5c9..bc68b081 100644
+--- a/src/bvar/scoped_timer.h
++++ b/src/bvar/scoped_timer.h
+@@ -48,7 +48,7 @@ public:
+         *_bvar << (butil::cpuwide_time_us() - _start_time);
+     }
+ 
+-    void reset() { _start_time = butil::cpuwide_time_us(); }
++    //void reset() { _start_time = butil::cpuwide_time_us(); }
+ 
+ private:
+     DISALLOW_COPY_AND_ASSIGN(ScopedTimer);

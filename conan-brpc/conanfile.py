@@ -19,8 +19,6 @@ class BrpcConan(ConanFile):
             "with_snappy": False }
     generators = ("cmake_paths")
     exports_sources = ["patches/*"]
-    # TODO: clang 10 breaks
-    # TODO: patch cmakelists.txt for with_snappy option
 
     requires = ("gflags/2.2.2",
                 "protobuf/3.9.1",
