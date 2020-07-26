@@ -62,3 +62,7 @@ directory:
 Use a similar command for the other packages, although some recipes depend on
 the others. E.g., you would need to create the leveldb package before creating
 the brpc package.
+
+Customize options either in the recipe or conanfile.txt or command line like
+so:
+`conan install . -o pkg_name:opt=optval ...`

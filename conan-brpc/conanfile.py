@@ -17,20 +17,22 @@ class BrpcConan(ConanFile):
     default_options = {
             "shared": False,
             "with_snappy": False }
-    generators = ("cmake_paths")
-    exports_sources = ["patches/*"]
+    # cmake_paths generates a file which we set as the cmake toolchain file
+    generators = ("cmake", "cmake_paths", "cmake_find_package")
+    exports_sources = ["CMakeLists.txt", "patches/*"]
 
     requires = ("gflags/2.2.2",
                 "protobuf/3.9.1",
-                "leveldb/1.22",
-                "protoc_installer/3.9.1@bincrafters/stable")
+                "leveldb/1.22")
 
     def config(self):
         # can also be passed via conan invocation. e.g.,
         # conan create ... -o protobuf:shared=True
         self.options['gflags'].shared = True
         self.options['gflags'].nothreads = False
+        # TODO figure out if we need with_ options for zlib
         self.options['protobuf'].with_zlib = True
+        self.options['protobuf'].shared = True
         self.options['leveldb'].with_snappy = self.options.with_snappy
 
     @property
@@ -68,10 +70,13 @@ class BrpcConan(ConanFile):
         # ... )
 
         cmake.definitions["CMAKE_TOOLCHAIN_FILE"] = "conan_paths.cmake"
+        # TODO: the source_subfolder should be something generic like
+        # src or source-subfolder, and we should rename. change
+        # cmakelists.txt also
         cmake.configure(
-            source_folder="incubator-brpc-0.9.6",
             defs={
                 'CMAKE_POSITION_INDEPENDENT_CODE': True,
+                'protobuf_MODULE_COMPATIBLE': True
             })
         return cmake
     
