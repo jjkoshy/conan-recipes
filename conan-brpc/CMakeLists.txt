@@ -4,9 +4,7 @@ project(cmake_wrapper)
 include(conanbuildinfo.cmake)
 conan_basic_setup()
 
-# TODO: keep only the one which is required
-option(protobuf_MODULE_COMPATIBLE "override" ON)
-find_program(Protobuf_PROTOC_EXECUTABLE NAMES protoc)
+# TODO: double-check all these are still needed
 find_program(PROTOBUF_PROTOC_EXECUTABLE NAMES protoc)
 set(PROTOBUF_INCLUDE_DIRS "${CONAN_PROTOBUF_ROOT}/include")
 set(PROTOBUF_INCLUDE_DIR "${CONAN_PROTOBUF_ROOT}/include")
