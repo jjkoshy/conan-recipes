@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f469eb9f..3638904b 100644
+index f469eb9f..82b0e56a 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -54,7 +54,7 @@ include(GNUInstallDirs)
@@ -23,37 +23,31 @@ index f469eb9f..3638904b 100644
  
  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
      include(CheckFunctionExists)
-@@ -119,7 +116,11 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+@@ -119,7 +116,8 @@ if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
      endif()
  endif()
  
 -include(FindProtobuf)
-+option(protobuf_MODULE_COMPATIBLE "override" ON)
-+# TODO: get rid of the version that is not required
-+find_program(Protobuf_PROTOC_EXECUTABLE NAMES protoc DOC "The Google Protocol Buffers Compiler")
-+find_program(PROTOBUF_PROTOC_EXECUTABLE NAMES protoc DOC "The Google Protocol Buffers Compiler")
++# TODO: see if this diff was needed
 +find_package(Protobuf REQUIRED)
  include(FindThreads)
  
  find_path(LEVELDB_INCLUDE_PATH NAMES leveldb/db.h)
-@@ -137,11 +138,14 @@ if(WITH_GLOG)
+@@ -137,7 +135,8 @@ if(WITH_GLOG)
      include_directories(${GLOG_INCLUDE_PATH})
  endif()
  
 -find_library(PROTOC_LIB NAMES protoc)
++# TODO: see if this is required or not
 +find_library(PROTOC_LIB NAMES protoc protocd)
  if(NOT PROTOC_LIB)
      message(FATAL_ERROR "Fail to find protoc lib")
  endif()
+@@ -157,9 +156,10 @@ include_directories(
+         ${OPENSSL_INCLUDE_DIR}
+         )
  
-+set(PROTOBUF_INCLUDE_DIRS "${CONAN_PROTOBUF_ROOT}/include")
-+set(PROTOBUF_INCLUDE_DIR "${CONAN_PROTOBUF_ROOT}/include")
-+
- if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-     set(OPENSSL_ROOT_DIR
-         "/usr/local/opt/openssl"    # Homebrew installed OpenSSL
-@@ -159,7 +163,7 @@ include_directories(
- 
++# TODO: see if this is still needed
  set(DYNAMIC_LIB
      ${GFLAGS_LIBRARY}
 -    ${PROTOBUF_LIBRARIES}
