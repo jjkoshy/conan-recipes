@@ -4,8 +4,11 @@ project(cmake_wrapper)
 include(conanbuildinfo.cmake)
 conan_basic_setup()
 
-# TODO: double-check all these are still needed
+# we need to set the executable manually since that seems to be missing in
+# the generated FindProtobuf.cmake; this is also related to the misplaced
+# endif in the protobuf recipe
 find_program(PROTOBUF_PROTOC_EXECUTABLE NAMES protoc)
+# TODO: double-check all these are still needed
 set(PROTOBUF_INCLUDE_DIRS "${CONAN_PROTOBUF_ROOT}/include")
 set(PROTOBUF_INCLUDE_DIR "${CONAN_PROTOBUF_ROOT}/include")
 
