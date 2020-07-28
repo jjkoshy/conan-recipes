@@ -12,4 +12,7 @@ find_program(PROTOBUF_PROTOC_EXECUTABLE NAMES protoc)
 set(PROTOBUF_INCLUDE_DIRS "${CONAN_PROTOBUF_ROOT}/include")
 set(PROTOBUF_INCLUDE_DIR "${CONAN_PROTOBUF_ROOT}/include")
 
+# disable picking up system-installed libraries
+set(CMAKE_FIND_USE_CMAKE_SYSTEM_PATH FALSE)
+
 add_subdirectory(incubator-brpc-0.9.6)

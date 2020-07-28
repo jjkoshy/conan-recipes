@@ -1,5 +1,5 @@
 diff --git a/CMakeLists.txt b/CMakeLists.txt
-index f469eb9f..9b59227f 100644
+index f469eb9f..a18238b2 100644
 --- a/CMakeLists.txt
 +++ b/CMakeLists.txt
 @@ -54,7 +54,7 @@ include(GNUInstallDirs)
@@ -19,7 +19,7 @@ index f469eb9f..9b59227f 100644
 -    COMMAND bash -c "git rev-parse --short HEAD | tr -d '\n'"
 -    OUTPUT_VARIABLE BRPC_REVISION
 -)
-+# TODO: this should be "generated"
++# TODO: move to conandata.yml and set in recipe cmakelists
 +set(BRPC_REVISION "f43bdcec")
  
  if(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
@@ -29,7 +29,7 @@ index f469eb9f..9b59227f 100644
  endif()
  
 -find_library(PROTOC_LIB NAMES protoc)
-+# TODO: see if this is required or not
++# This diff hunk is necessary since a debug build produces protocd
 +find_library(PROTOC_LIB NAMES protoc protocd)
  if(NOT PROTOC_LIB)
      message(FATAL_ERROR "Fail to find protoc lib")
