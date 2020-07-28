@@ -8,7 +8,7 @@ conan_basic_setup()
 # the generated FindProtobuf.cmake; this is also related to the misplaced
 # endif in the protobuf recipe
 find_program(PROTOBUF_PROTOC_EXECUTABLE NAMES protoc)
-# TODO: double-check all these are still needed
+# oddly, brpc uses both variants of protobuf include directories
 set(PROTOBUF_INCLUDE_DIRS "${CONAN_PROTOBUF_ROOT}/include")
 set(PROTOBUF_INCLUDE_DIR "${CONAN_PROTOBUF_ROOT}/include")
 
