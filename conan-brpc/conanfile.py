@@ -26,10 +26,8 @@ class BrpcConan(ConanFile):
                 "leveldb/1.22")
 
     def config(self):
-        # can also be passed via conan invocation. e.g.,
-        # conan create ... -o protobuf:shared=True
+        # must build protobuf with zlib since brpc build does not make it optional
         self.options['protobuf'].with_zlib = True
-        self.options['protobuf'].shared = True
         self.options['leveldb'].with_snappy = self.options.with_snappy
 
     @property
