@@ -50,7 +50,7 @@ index f469eb9f..9a28c306 100644
      ${PROTOC_LIB}
      ${CMAKE_THREAD_LIBS_INIT}
 diff --git a/cmake/FindGFLAGS.cmake b/cmake/FindGFLAGS.cmake
-index 50950422..97c4f986 100644
+index 50950422..0c21004b 100644
 --- a/cmake/FindGFLAGS.cmake
 +++ b/cmake/FindGFLAGS.cmake
 @@ -9,7 +9,7 @@ if (GFLAGS_STATIC)
@@ -58,7 +58,7 @@ index 50950422..97c4f986 100644
    endif (WIN32)
  endif (GFLAGS_STATIC)
 -find_library(GFLAGS_LIBRARY NAMES gflags libgflags)
-+find_library(GFLAGS_LIBRARY NAMES gflags libgflags gflags_debug libgflags_debug)
++find_library(GFLAGS_LIBRARY NAMES gflags libgflags gflags_debug libgflags_debug gflags_nothreads libgflags_nothreads gflags_nothreads_debug libgflags_nothreads_debug)
  if(GFLAGS_INCLUDE_PATH AND GFLAGS_LIBRARY)
    set(GFLAGS_FOUND TRUE)
  endif(GFLAGS_INCLUDE_PATH AND GFLAGS_LIBRARY)
