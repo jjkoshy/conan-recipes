@@ -38,6 +38,7 @@ class BrpcConan(ConanFile):
         zip_name = "%s.zip" % self.version
         tools.download("https://github.com/apache/incubator-brpc/archive/%s.zip" % self.version, zip_name)
         tools.unzip(zip_name)
+        # TODO: move to conandata.yml
         tools.check_md5(zip_name, "783b3b0d5b9d254a93f26ce769b00bfc")
         os.unlink(zip_name)
         with tools.chdir(self.zip_folder_name):
