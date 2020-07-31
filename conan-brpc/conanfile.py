@@ -28,7 +28,6 @@ class BrpcConan(ConanFile):
     def config(self):
         # can also be passed via conan invocation. e.g.,
         # conan create ... -o protobuf:shared=True
-        self.options['gflags'].shared = True
         self.options['gflags'].nothreads = False
         self.options['protobuf'].with_zlib = True
         self.options['protobuf'].shared = True
